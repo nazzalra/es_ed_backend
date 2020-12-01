@@ -1,0 +1,52 @@
+function hitungAturanDempster (input gejala : Array) -> Array
+{ Mengembalikan nilai kesimpulan identifikasi bertipe Array yang berisi jenis gangguan beserta nilai keyakinannya berdasarkan id gejala yang diinputkan }
+ 
+DEKLARASI
+	m1,m2,m3 : Array
+	daftar_aturan : Array
+    type Aturan : record <
+        gangguan        : Gangguan
+        nilai_keyakinan : float[0..1]
+    >
+	function getAturanGejala (input gejala : Array) -> Array
+    { Memperoleh nilai aturan untuk setiap gejala }
+    
+    function setBPA(input aturan : Aturan) -> Array
+    { Menentukan nilai BPA (bertipe array) yang berisi nilai aturan beserta nilai fod nya }
+
+    function setBPAFrom(input m : Array) -> Array
+    { Menentukan nilai BPA (bertipe array) berdasarkan nilai BPA lain yang diinputkan (untuk keperluan konversi) }
+
+    function getKey(input x : Aturan, input y : Aturan) -> String
+    { Menentukan key dari hasil irisan antara himpunan gangguan pada x dan y, jika tidak ada irisan maka fungsi akan mengembalikan 'himpunan_kosong' }
+
+    function hitungAturanDempster(input m : Array) -> Array
+    { Menghitung  }
+
+    // function createFod (input nilai_keyakinan : float) -> Aturan
+    // { Buat nilai fod (semesta) berdasarkan nilai_keyakinan yang diinputkan }
+	
+
+ALGORITMA:
+    daftar_aturan = getAturanGejala(gejala)	{ peroleh nilai aturan untuk setiap gejala }
+    m3 = []                                 { reset variabel m3 }
+    while daftar_aturan is not empty do     { lakukan pengulangan selama daftar_aturan tidak kosong}
+        m1 = setBPA(shift(daftar_aturan))
+        if m3 is empty then
+            m2 = setBPA(shift(daftar_aturan))               
+        else
+            m2 = setBPAFrom(m3)
+        endif
+        for i <- 0 to m2.length - 1 do
+            for j <- 0 to 1 do
+                key <- getKey(m1[j],m2[i])
+                if m3[key] is not defined then
+                    m3[key] <- m1[j].nilai_keyakinan * m2[i].nilai_keyakinan
+                else
+                    m3[key] <- m3[key] + m1[j].nilai_keyakinan * m2[i].nilai_keyakinan
+                endif
+            endfor
+        endfor
+        m3 <- hitungAturanDempster(m3)
+    endwhile
+    return getKesimpulan(m3)
