@@ -16,66 +16,73 @@ class GejalaController extends Controller{
         return $json;
     }
     public function identifikasi(Request $request){
-        $aturan_gejala = json_decode(Aturan::gejala($request->gejala)); // get aturan gejala
-        // $aturan_fod = Aturan::fod();
+        $daftar_aturan = $this->getAturanGejala($request->gejala);
         $m3 = array();
-        while(!empty($aturan_gejala)){
-            $m1[0] = array_shift($aturan_gejala);
-            $m1[1] = Gejala::createFod($m1[0]->nilai_keyakinan);
-            $m2 = array();
-            if (empty($m3)) {
-                $m2[0] = array_shift($aturan_gejala);
-            } else {
-                // $densitas_baru merupakan array assosiative
-                foreach ($m3 as $key => $val) {
-                    if ($key != "himpunan_kosong") {
-                        $m = new stdClass;
-                        $m->gangguan = $key;
-                        $m->nilai_keyakinan = $val;
-                        $m2[] = $m;
-                    }
-                }
-                // $densitas2 merupakan hasil konversi struktur $densitas_baru yang array assosiative ke array numberik
-            }
-            $nilai_fod2 = 1;
-            foreach ($m2 as $m) $nilai_fod2 -= $m->nilai_keyakinan; // memperoleh densitas theta
-            $fodObj = new stdClass;
-            $fodObj->gangguan = implode(',', Aturan::fod());
-            $fodObj->nilai_keyakinan = $nilai_fod2;
-            $m2[] = $fodObj;
-            $m2_len = count($m2);
+        while(!empty($daftar_aturan)){
+            $m1 = $this->setBPA($e = array_shift($daftar_aturan));
+            $m2 = empty($m3)?$this->setBPA($e = array_shift($daftar_aturan)):$this->setBPAFrom($m3);
             $m3 = array();
-            for ($y = 0; $y < $m2_len; $y++) {
-                for ($x = 0; $x < 2; $x++) {
-                    if (!($y == $m2_len - 1 && $x == 1)) {
-                        $v = explode(',', $m1[$x]->gangguan);
-                        $w = explode(',', $m2[$y]->gangguan);
-                        sort($v);
-                        sort($w);
-                        $vw = array_intersect($v, $w);
-                        // buat array assosiative
-                        $key = empty($vw)?"himpunan_kosong":implode(',',$vw);
-                        if (!isset($m3[$key])) {
-                            $m3[$key] = $m1[$x]->nilai_keyakinan * $m2[$y]->nilai_keyakinan;
+            for ($i = 0; $i < count($m2); $i++) {
+                for ($j = 0; $j < 2; $j++) {
+                        $key = $this->getKey($m1[$j],$m2[$i]);
+                        if (!isset($m3[$key])) { 
+                            $m3[$key] = $m1[$j]->nilai_keyakinan * $m2[$i]->nilai_keyakinan;
                         } else {
-                            $m3[$key] += $m1[$x]->nilai_keyakinan * $m2[$y]->nilai_keyakinan;
+                            $m3[$key] += $m1[$j]->nilai_keyakinan * $m2[$i]->nilai_keyakinan;
                         }
-                    }
                 }
             }
-            foreach ($m3 as $key => $val) {
-                if ($key != "himpunan_kosong") {
-                    $m3[$key] = $val / (1 - (isset($m3["himpunan_kosong"]) ? $m3["himpunan_kosong"] : 0));
-                }
+            $m3 = $this->hitungAturanDempster($m3);
+        }
+        return response()->json(
+            $this->getKesimpulan($m3)
+        );
+    }
+    protected function getAturanGejala($gejala){
+        return json_decode(Aturan::gejala($gejala));
+    }
+    protected function setBPA($e){
+        $m[0] = $e;
+        $m[1] = Gejala::createFod($m[0]->nilai_keyakinan);
+        return $m;
+    }
+    protected function setBPAFrom($m3){
+        foreach ($m3 as $key => $val) { // konvert dari array assosiative ke objek
+                $m = new stdClass;
+                $m->gangguan = $key;
+                $m->nilai_keyakinan = $val;
+                $m2[] = $m;
+        }
+        return $m2;
+    }
+    protected function getKey($m1_j,$m2_i){
+        $x = explode(',', $m1_j->gangguan);
+        $y = explode(',', $m2_i->gangguan);
+        sort($x);
+        sort($y);
+        $xy = array_intersect($x, $y);
+        // buat array assosiative
+        return empty($xy)?"himpunan_kosong":implode(',',$xy);
+    }
+    protected function hitungAturanDempster($m3){
+        foreach ($m3 as $key => $val) {
+            if ($key != "himpunan_kosong") {
+                $m3[$key] = $val / (1 - (isset($m3["himpunan_kosong"]) ? $m3["himpunan_kosong"] : 0));
             }
         }
         unset($m3["himpunan_kosong"]);
+        return $m3;
+    }
+    protected function getGangguan($ids){
+        return Gangguan::whereIn('id',explode(",",$ids))->get();
+    }
+    protected function getKesimpulan($m3){
+        unset($m3[implode(',',Aturan::fod())]);
         arsort($m3);
         $keys = array_keys($m3);
-        $gangguan = Gangguan::whereIn('id',explode(",",$keys[0]))->get();
-        return response()->json([
-            'gangguan' => $gangguan,
+        return [
+            'gangguan' => $this->getGangguan($keys[0]),
             'nilai_keyakinan' => $m3[$keys[0]]
-        ]);
+        ];
     }
 }

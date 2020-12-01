@@ -1,7 +1,7 @@
 // Pseudocode fungsi Identifikasi Gejala
 
-function Identifikasi_Gejala (input gejala : Array) -> Aturan
-{Mengembalikan suatu data bertipe Aturan yang berisi jenis gangguan beserta nilai keyakinannya berdasarkan id gejala yang diinputkan}
+function Identifikasi_Gejala (input gejala : Array) -> Array
+{Mengembalikan suatu data bertipe Array yang berisi jenis gangguan beserta nilai keyakinannya berdasarkan id gejala yang diinputkan}
  
 DEKLARASI
 	m1,m2,m3 : Array
@@ -10,28 +10,41 @@ DEKLARASI
         gangguan        : Gangguan
         nilai_keyakinan : float[0..1]
     >
-	function AturanGejala (input gejala : Array) -> Array
+	function getAturanGejala (input gejala : Array) -> Array
     { Memperoleh nilai aturan untuk setiap gejala }
     
-    function shift (input list : Array) -> dynamic
-    { Membuang data pertama pada suatu array }
+    function setBPA(input aturan : Aturan) -> Array
+    { Menentukan nilai BPA (bertipe array) yang berisi nilai aturan beserta nilai fod nya }
 
-    function createFod (input nilai_keyakinan : float) -> Aturan
-    { Buat nilai fod (semesta) berdasarkan nilai_keyakinan yang diinputkan }
+    function setBPAFrom(input m : Array) -> Array
+    { Menentukan nilai BPA (bertipe array) berdasarkan nilai BPA lain yang diinputkan (untuk keperluan konversi) }
+
+
+
+    // function createFod (input nilai_keyakinan : float) -> Aturan
+    // { Buat nilai fod (semesta) berdasarkan nilai_keyakinan yang diinputkan }
 	
 
 ALGORITMA:
-    daftar_aturan <- AturanGejala(gejala)	{ peroleh nilai aturan untuk setiap gejala }
-    while daftar_aturan is not empty do    { lakukan pengulangan selama data aturan tidak kosong}
-        m1[0] <- shift(daftar_aturan)                { ambil data pertama pada data aturan}
-        m1[1] <- createFod(m1[0].nilai_keyakinan)    { buat nilai fod }
-        m2 <- []                                     { reset variabel m2 }
-
+    daftar_aturan = getAturanGejala(gejala)	{ peroleh nilai aturan untuk setiap gejala }
+    while daftar_aturan is not empty do     { lakukan pengulangan selama data aturan tidak kosong}
+        m1 = setBPA(shift(daftar_aturan))
         if m3 is empty then
-            m2[0] <- shift(daftar_aturan)                      { ambil data pertama pada data aturan}
+            m2 = setBPA(shift(daftar_aturan))               
         else
-            m2 <- m3                                           { jadikan data m3 sebagai m2 }
-
-        m2[length(m2)] <- createFod(nilai_keyakinan_total(m2)) { buat nilai fod }
-        m3 <- []                                     { reset variabel m3 }
+            m2 = setBPAFrom(m3)
+        endif
+        m3 <- []                           { reset variabel m3 }
+        for i <- 0 to m2.length - 1 do
+            for j <- 0 to 1 do
+                key <- getKey(m1[j],m2[i])
+                if m3[key] is not defined then
+                    m3[key] <- m1[j].nilai_keyakinan * m2[i].nilai_keyakinan
+                else
+                    m3[key] <- m3[key] + m1[j].nilai_keyakinan * m2[i].nilai_keyakinan
+                endif
+            endfor
+        endfor
+        m3 <- hitungAturanDempster(m3)
     endwhile
+    return getKesimpulan(m3)
