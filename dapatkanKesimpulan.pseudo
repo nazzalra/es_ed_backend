@@ -1,0 +1,23 @@
+function dapatkanKesimpulan (input m3 : Array) -> Aturan
+{ Memperoleh kesimpulan berdasarkan nilai m3 yang memiliki nilai keyakinan tertinggi }
+ 
+DEKLARASI
+    function pop (input list : Array) -> Any
+    { Mengembalikan elemen terakhir dari suatu array sekaligus membuangnya dari array tsb }
+
+    function sort(input list : Array) -> Array
+    { Mengurutkan array dari nilai tertinggi ke nilai terkecil }
+
+    function dapatkanDataGangguan(input id_gangguan : String) -> Array
+    { Mengembalikan data gangguan berdasarkan id_gangguan yang diinputkan }
+
+    function kunciElemenPertama(input list : Array) -> String
+    { Mengembalikan kunci elemen pertama pada suatu list}
+
+ALGORITMA:
+    pop(m3)
+    sort(m3)
+    return [
+        'gangguan' : dapatkanDataGangguan(kunciElemenPertama(m3)),
+        'nilai_keyakinan' : m3[kunciElemenPertama(m3)]
+    ]

@@ -21,7 +21,7 @@ class GejalaController extends Controller{
         while(!empty($daftar_aturan)){
             $m1 = $this->tentukanBPA(array_shift($daftar_aturan));
             $m2 = empty($m3)?$this->tentukanBPA(array_shift($daftar_aturan)):$this->tentukanBPAdari($m3);
-            $m3 = $this->hitungAturanDempster($m1,$m2);
+            $m3 = $this->hitungKombinasiAturanDempster($m1,$m2);
         }
         return response()->json(
             $this->dapatkanKesimpulan($m3)
@@ -53,7 +53,7 @@ class GejalaController extends Controller{
         // buat array assosiative
         return empty($xy)?"himpunan_kosong":implode(',',$xy);
     }
-    protected function hitungAturanDempster($m1,$m2){
+    protected function hitungKombinasiAturanDempster($m1,$m2){
         $m3 = [];
         for ($i = 0; $i < count($m2); $i++) {
             for ($j = 0; $j < 2; $j++) {

@@ -1,0 +1,23 @@
+function hitungKombinasiBPA (input m1 : Array, input m2 : Array) -> Array
+{ Menghitung kombinasi BPA antara m1 dan m2 menggunakan aturan kombinasi dempster }
+ 
+DEKLARASI
+    function dapatkanHimpunanGangguan(input x : Aturan, input y : Aturan) -> String
+    { Memperoleh himpunan gangguan hasil irisan antara x dan y, jika tidak ada irisan maka nilai "himpunan_kosong" akan dikembalikan }
+
+    function tanpaEvidentialConflict(input m3 : Array) -> Array 
+    { Menghitung kembali nilai BPA pada setiap elemen m3 yang bukan himpunan kosong dengan membaginya dengan 1 - evidential_conflict }
+
+ALGORITMA:
+    m3 = []
+    for i = 0 to panjang(m2) - 1 do                                                                 
+        for j = 0 to 1 do 
+                himpunan_gangguan = dapatkanHimpunanGangguan(m1[j],m2[i])                           
+                if  m3[himpunan_gangguan] is not exist then 
+                    m3[himpunan_gangguan] = m1[j].nilai_keyakinan * m2[i].nilai_keyakinan
+                else
+                    m3[himpunan_gangguan] += m1[j].nilai_keyakinan * m2[i].nilai_keyakinan
+                endif
+        endfor
+    endfor
+    return tanpaEvidentialConflict(m3)

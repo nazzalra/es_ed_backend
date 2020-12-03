@@ -1,0 +1,18 @@
+function tanpaEvidentialConflict (input m3 : Array) -> Array
+{ Menghitung kembali nilai BPA pada setiap elemen m3 yang bukan himpunan kosong dengan membaginya dengan 1 - evidential_conflict }
+ 
+DEKLARASI
+
+
+ALGORITMA:
+    foreach m3 as (himpunan_gangguan, nilai) do
+        if himpunan_gangguan is not "himpunan_kosong" then
+            if m3["himpunan_kosong"] is exist then
+                m3[himpunan_gangguan] = nilai / (1 - m3["himpunan_kosong"])
+            else
+                m3[himpunan_gangguan] = nilai / (1 - 0)
+            endif
+        endif
+    endfor
+    delete m3["himpunan_kosong"]
+    return m3
