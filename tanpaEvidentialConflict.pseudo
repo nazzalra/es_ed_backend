@@ -1,10 +1,10 @@
 function tanpaEvidentialConflict (input m3 : Array) -> Array
 { Menghitung kembali nilai BPA pada setiap elemen m3 yang bukan himpunan kosong dengan membaginya dengan 1 - evidential_conflict }
  
-DEKLARASI
+DEKLARASI :
 
 
-ALGORITMA:
+ALGORITMA :
     foreach m3 as (himpunan_gangguan, nilai) do
         if himpunan_gangguan is not "himpunan_kosong" then
             if m3["himpunan_kosong"] is exist then

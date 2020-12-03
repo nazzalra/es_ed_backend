@@ -1,7 +1,7 @@
 function dapatkanKesimpulan (input m3 : Array) -> Aturan
 { Memperoleh kesimpulan berdasarkan nilai m3 yang memiliki nilai keyakinan tertinggi }
  
-DEKLARASI
+DEKLARASI :
     function pop (input list : Array) -> Any
     { Mengembalikan elemen terakhir dari suatu array sekaligus membuangnya dari array tsb }
 
@@ -14,7 +14,7 @@ DEKLARASI
     function kunciElemenPertama(input list : Array) -> String
     { Mengembalikan kunci elemen pertama pada suatu list}
 
-ALGORITMA:
+ALGORITMA :
     pop(m3)
     sort(m3)
     return [

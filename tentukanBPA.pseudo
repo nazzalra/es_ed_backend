@@ -1,0 +1,17 @@
+function tentukanBPA (input aturan : Aturan) -> Array
+{ Menentukan nilai BPA yang berisi nilai aturan beserta nilai frame of discernment (fod) nya }
+
+DEKLARASI :
+    m : Array
+    type Aturan : record <
+        gangguan        : Gangguan
+        nilai_keyakinan : float[0..1]
+    >
+
+ALGORITMA :
+    m[0] = aturan
+    m[1] = Aturan <
+        gangguan : '1,2,3'
+        nilai_keyakinan : 1 - m[0]
+    >
+    return m

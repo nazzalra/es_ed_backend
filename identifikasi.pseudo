@@ -1,8 +1,7 @@
 function Identifikasi (input id_gejala : Array) -> Aturan
-{ Mengembalikan nilai kesimpulan identifikasi yang berisi jenis
-    gangguan beserta nilai keyakinan berdasarkan id_gejala yang diinputkan }
+{ Mengembalikan nilai kesimpulan identifikasi yang berisi jenis gangguan beserta nilai keyakinan berdasarkan id_gejala yang diinputkan }
  
-DEKLARASI
+DEKLARASI :
 	m1,m2,m3 : Array
 	daftar_aturan : Array
     type Aturan : record <
@@ -13,33 +12,31 @@ DEKLARASI
     { Memperoleh nilai aturan untuk setiap gejala }
 
     function ambilDari (input list : Array) -> Any
-    { Memperoleh elemen pertama dari suatu list
-        sekaligus membuang elemen tersebut dari list }
+    { Memperoleh elemen pertama dari suatu list sekaligus membuang elemen tersebut dari list }
     
-    function tentukanBPA(input aturan : Aturan) -> Array
-    { Menentukan nilai BPA yang berisi nilai aturan
-        beserta nilai frame of discernment (fod) nya }
+    function tentukanBPA (input aturan : Aturan) -> Array
+    { Menentukan nilai BPA yang berisi nilai aturan beserta nilai frame of discernment (fod) }
 
-    function tentukanBPAdari(input m : Array) -> Array
-    { Menentukan nilai BPA berdasarkan nilai BPA lain yang diinputkan (untuk keperluan konversi) }
+    function tentukanBPAdari (input m3 : Array) -> Array
+    { Menentukan nilai BPA berdasarkan nilai m3 yang diinputkan }
 
-    function hitungKombinasiBPA(input m1 : Array, input m2 : Array) -> Array
+    function hitungKombinasiBPA (input m1 : Array, input m2 : Array) -> Array
     { Menghitung kombinasi antara m1 dan m2 menggunakan aturan dempster }
 
-    function dapatkanKesimpulan(input m3 : Array) -> Aturan
+    function dapatkanKesimpulan (input m3 : Array) -> Aturan
     { Memperoleh kesimpulan berdasarkan nilai m3 yang memiliki nilai keyakinan tertinggi }
 	
 
-ALGORITMA:
-    daftar_aturan = dapatkanAturan(id_gejala)	                     { akses database untuk peroleh nilai aturan untuk setiap gejala }
-    m3 = []                                                          { reset nilai m3 }
-    while daftar_aturan is not empty do                              { lakukan pengulangan selama daftar_aturan tidak kosong }
+ALGORITMA :
+    daftar_aturan = dapatkanAturan(id_gejala)	        { akses database untuk peroleh nilai aturan untuk setiap gejala }
+    m3 = []                                             { reset nilai m3 }
+    while daftar_aturan is not empty do                 { lakukan pengulangan selama daftar_aturan tidak kosong }
         m1 = tentukanBPA(ambilDari(daftar_aturan))
-        if m3 is empty then                                          { jika nilai m3 kosong maka }
-            m2 = tentukanBPA(ambilDari(daftar_aturan))               { tentukan BPA untuk m2, data inputnya ambil dari daftar_aturan }
+        if m3 is empty then                             { jika nilai m3 kosong maka }
+            m2 = tentukanBPA(ambilDari(daftar_aturan))  { tentukan BPA untuk m2, data inputnya ambil dari daftar_aturan }
         else
-            m2 = tentukanBPAdari(m3)                                 { tentukan BPA untuk m2, data inputnya ambil dari nilai m3 }
+            m2 = tentukanBPAdari(m3)                    { tentukan BPA untuk m2, data inputnya ambil dari nilai m3 }
         endif
-        m3 = hitungKombinasiBPA(m1,m2)                               { lakukan perhitungan kombinasi aturan dempster}                         
+        m3 = hitungKombinasiBPA(m1,m2)                  { lakukan perhitungan kombinasi aturan dempster}                         
     endwhile
-    return dapatkanKesimpulan(m3)                                    { peroleh kesimpulan dari nilai m3}
+    return dapatkanKesimpulan(m3)                       { peroleh kesimpulan dari nilai m3}

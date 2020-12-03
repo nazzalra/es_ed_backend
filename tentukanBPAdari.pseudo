@@ -1,0 +1,18 @@
+function tentukanBPAdari (input m3 : Array) -> Array
+{ Menentukan nilai BPA berdasarkan nilai m3 yang diinputkan }
+
+DEKLARASI :
+    m,m2 : Array
+    type Aturan : record <
+        gangguan        : Gangguan
+        nilai_keyakinan : float[0..1]
+    >
+ALGORITMA :
+    foreach m3 as (himpunan_gangguan,nilai) do 
+        m = Aturan <
+            gangguan        : himpunan_gangguan
+            nilai_keyakinan : nilai
+        >
+        m2.input(m)
+    endfor
+    return m2
